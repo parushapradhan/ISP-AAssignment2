@@ -8,28 +8,45 @@ public class ElGamalAlice
 	private static BigInteger computeY(BigInteger p, BigInteger g, BigInteger d)
 	{
 		// IMPLEMENT THIS FUNCTION;
+		return g.modPow(d, p);
 	}
 
 	private static BigInteger computeK(BigInteger p)
 	{
 		// IMPLEMENT THIS FUNCTION;
+		BigInteger pMinusOne = p.subtract(BigInteger.ONE);
+        SecureRandom random = new SecureRandom();
+        BigInteger k;
+        do {
+            // Generate a candidate k with bit length similar to p.
+            k = new BigInteger(p.bitLength(), random);
+        } while (k.compareTo(BigInteger.ONE) <= 0 || 
+                 k.compareTo(pMinusOne) >= 0 || 
+                 !k.gcd(pMinusOne).equals(BigInteger.ONE));
+        return k;
 	}
 	
 	private static BigInteger computeA(BigInteger p, BigInteger g, BigInteger k)
 	{
 		// IMPLEMENT THIS FUNCTION;
+		return g.modPow(k, p);
 	}
 
 	private static BigInteger computeB(	String message, BigInteger d, BigInteger a, BigInteger k, BigInteger p)
 	{
 		// IMPLEMENT THIS FUNCTION;
+		BigInteger mod = p.subtract(BigInteger.ONE); 
+        BigInteger h = new BigInteger(message.getBytes());
+        BigInteger numerator = h.subtract(d.multiply(a)).mod(mod);
+        BigInteger kInv = k.modInverse(mod);
+        return kInv.multiply(numerator).mod(mod);
 	}
 
 	public static void main(String[] args) throws Exception 
 	{
 		String message = "The quick brown fox jumps over the lazy dog.";
 
-		String host = "your local host ip";
+		String host = "127.0.0.1";
 		int port = 7999;
 		Socket s = new Socket(host, port);
 		ObjectOutputStream os = new ObjectOutputStream(s.getOutputStream());

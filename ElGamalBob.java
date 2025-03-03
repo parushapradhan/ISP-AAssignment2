@@ -8,6 +8,17 @@ public class ElGamalBob
 	private static boolean verifySignature(	BigInteger y, BigInteger g, BigInteger p, BigInteger a, BigInteger b, String message)
 	{
 		// IMPLEMENT THIS FUNCTION;
+		        // Compute H(m) as a BigInteger from the message's bytes.
+				BigInteger H = new BigInteger(message.getBytes());
+        
+				// Compute left-hand side: g^(H(m)) mod p.
+				BigInteger lhs = g.modPow(H, p);
+				
+				// Compute right-hand side: (y^a * a^b) mod p.
+				BigInteger rhs = (y.modPow(a, p).multiply(a.modPow(b, p))).mod(p);
+				
+				// Return true if both sides are equal.
+				return lhs.equals(rhs);
 	}
 
 	public static void main(String[] args) throws Exception 
